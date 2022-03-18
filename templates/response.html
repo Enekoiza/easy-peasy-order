@@ -1,0 +1,131 @@
+
+
+<style>
+.underline-on-hover:hover {
+    border-bottom: 2px solid orange !important;
+    border-radius: 10px;
+    border-width: medium !important;
+}
+
+
+</style>
+
+<!-- PRODUCT SELECTOR -->
+<div class="btn-toolbar" id="product-group" style="text-align: center; border: 2mm;">
+    {% set path = './photos/' %}
+    {% for row in product %}
+    <a href="" id='clickable-product' class="border underline-on-hover box" style="margin:0 auto !important;  margin-top: 5px !important; color: inherit; text-decoration: none;">
+        <div class="mt-1" style="display:block;" id='product'>
+            <img class="product-photo" src="https://www.drinkstuff.com/productimg/118462_large.jpg" alt="Girl in a jacket" width="200" height="200">
+            <p class="product-info" style="margin-right: 3px;">{{row[1]}}</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="product-modal" tabindex="-1" role="dialog" aria-labelledby="product-modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="product-modalLabel">Quantity selection</h5>
+        <button type="button" class="close modal-closer" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+          <img class="product-photo-modal float-start" src="" alt="Girl in a jacket" width="200" height="200">
+          <div class="float-end text-center">
+            <h3>Choose how many:</h1>
+            <p class="product-info-modal" style="margin-right: 3px;"></p>
+            <div>
+              <button class="d-inline p-2 bg-primary text-white" id="substract-item-count" type="button">-</button>
+              <p class="d-inline p-2" id="item-count">0</p>
+              <button class="d-inline p-2 bg-primary text-white" id="add-item-count" type="button">+</button>
+            </div>
+
+          </div>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-closer">Close</button>
+        <button type="button" id="add-basket" class="btn btn-primary">Add to basket</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script> //Jquery to add the selected item to the localstorage in the front-end
+
+  $(document).ready(function(){
+
+    var basket_lenght = localStorage.length;
+    if(basket_lenght > 0){
+      $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
+
+    }
+    else{
+      $('#addToCart').text("View Basket (Empty)");
+    }
+    $('#add-basket').click(function(){
+      var product_info = $('.product-info-modal').text();
+      var product_count = $('#item-count').text();
+      if(product_count == 0){
+        alert("0 items can't be added to the basket");
+      }
+      else{
+        localStorage.setItem(product_info, product_count);
+        basket_lenght = localStorage.length;
+
+        $('#product-modal').modal('toggle');
+        $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
+      }
+      
+    });
+  })
+</script>
+
+<script>//Jquery to pop the modal when an item is clicked
+$(document).ready(function(){
+  $("#product-group a").click(function(){
+    var selected_product = $(this).find(".product-info").text();
+    var selected_product_image = $(this).find(".product-photo").prop('src');
+    $('.product-info-modal').html(selected_product);
+    $('.product-photo-modal').attr('src', selected_product_image);
+    $('#item-count').text(1);
+    $('#product-modal').modal("show");
+    return false;
+  })
+})
+</script>
+<script>//Jquery to add or remove 1 from the item counter inside the modal
+  $(document).ready(function(){
+    $('#add-item-count').click(function(){
+      var count = $('#item-count').text();
+      var int_count = parseInt(count);
+      int_count = int_count + 1;
+      $('#item-count').text(int_count);
+    });
+    $('#substract-item-count').click(function(){
+      var count = $('#item-count').text();
+      var int_count = parseInt(count);
+      int_count = int_count - 1;
+      if(int_count < 0){
+        alert("Sorry, you can't select less than 0");
+        int_count = 0;
+      }
+      $('#item-count').text(int_count);
+    });
+  })
+</script>
+<script>//Jquery to close the modal when the .modal-closer class selector is clicked (the 'x' or the close button)
+  $(document).ready(function(){
+    $('.modal-closer').click(function(){
+      $('#product-modal').modal('toggle');
+    });
+  })
+</script>
+

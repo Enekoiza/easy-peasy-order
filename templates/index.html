@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Jquery -->
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- symbols for input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <title>Easy Peasy order</title>
+</head>
+<style>
+
+    .search-bar {
+    width: 30%;
+    position: relative;
+    border-style: groove;
+    border-radius: 10px;
+    }
+
+    .search-bar input {
+    width: calc(100% - 60px);
+    height: 30px;
+    text-align: center;
+    border: none;
+    border-radius: 18px;
+    outline: none;
+    padding: 0 30px;
+    }
+
+    .search-ico {
+    position: absolute;
+    left: 10px;
+    top:8px;
+    cursor: pointer;
+    }
+
+    .microphone-ico {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    cursor: pointer;
+    }
+
+    #addToCart {
+    display:block;
+    position:fixed;
+    text-align:center;
+    background:rgb(52, 41, 201);
+    color:white !important;
+    bottom:20px; 
+    left:20px;
+    right:20px;
+    padding:10px;
+    color: inherit; 
+    text-decoration: none;
+    }
+</style>
+<body style="padding-bottom: 80px;">
+    <div class="search-bar text-center box">
+        <input type="text" id="search" name="search" placeholder="Search" value="{{micro|default('', true)}}"/>
+        <a href="{{ url_for('home') }}" id='home' name='home' class="fa fa-home search-ico"></a>
+        <a href="{{ url_for('generate') }}" id='microphone' name='microphone' class="fa fa-microphone microphone-ico"></a>
+      </div>
+      <div id="result" name="result"></div>
+    
+      <a id="addToCart" href="#">View basket</a>
+</body>
+
+</html>
+
+<script>
+$(document).ready(function() {
+
+    var search = $('#search').val();
+    load_data(search);
+    function load_data(query)
+    {
+        $.ajax({
+            url:"/ajaxlivesearch",
+            method:"POST",
+            data:{query:query},
+            success:function(data)
+            {
+                $('#result').html(data);
+                $('#result').append(data.htmlresponse);
+            }
+        });
+    }
+    $('#search').keyup(function(){
+        var search = $(this).val();
+        if(search != ''){
+            load_data(search);
+        }
+        else{
+            load_data();
+        }
+
+    });
+
+});
+</script>

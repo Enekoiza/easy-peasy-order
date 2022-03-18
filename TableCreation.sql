@@ -1,0 +1,8 @@
+CREATE DATABASE EASYPEASY
+    DEFAULT CHARACTER SET = 'utf8mb4';
+
+CREATE TABLE PRODUCT(  
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Primary Key',
+    product_name VARCHAR(255) COMMENT 'Product name',
+    related_words VARCHAR(255) COMMENT 'Words related to the product'
+) DEFAULT CHARSET UTF8 COMMENT '';
