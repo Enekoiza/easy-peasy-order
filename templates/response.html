@@ -7,23 +7,30 @@
     border-width: medium !important;
 }
 
+p {
+  font-weight: bold; 
+  color: white; 
+  mix-blend-mode: difference;
+}
+
 
 </style>
 
 <!-- PRODUCT SELECTOR -->
 <div class="btn-toolbar" id="product-group" style="text-align: center; border: 2mm;">
-    {% set path = './photos/' %}
     {% for row in product %}
     <a href="" id='clickable-product' class="border underline-on-hover box" style="margin:0 auto !important;  margin-top: 5px !important; color: inherit; text-decoration: none;">
-        <div class="mt-1" style="display:block;" id='product'>
-            <img class="product-photo" src="https://www.drinkstuff.com/productimg/118462_large.jpg" alt="Girl in a jacket" width="200" height="200">
-            <p class="product-info" style="margin-right: 3px;">{{row[1]}}</p>
+        <div class="mt-2" style="display:block;" id='product'>
+            <img class="product-photo" src="{{ row[5] }}" alt="{{row[0]}}" width="200" height="200">
+            <p class="product-info" style="margin-right: 3px; ">{{row[0]}}</p>
+            <p style="font-weight: bold;">{{ row[4] }}</p>
+            <p style="font-weight: bold;">£ {{row[2]}}</p>
         </div>
     </a>
     {% endfor %}
 </div>
 
-<!-- MODAL -->
+<!-- MODAL-PRODUCT-QUANTITY -->
 <div class="modal fade" id="product-modal" tabindex="-1" role="dialog" aria-labelledby="product-modalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -33,20 +40,21 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body text-center">
 
-          <img class="product-photo-modal float-start" src="" alt="Girl in a jacket" width="200" height="200">
-          <div class="float-end text-center">
+          <div>
+            <img class="product-photo-modal" src="" alt="" width="200" height="200">
+          </div>
+          <div class="text-center">
             <h3>Choose how many:</h1>
             <p class="product-info-modal" style="margin-right: 3px;"></p>
             <div>
-              <button class="d-inline p-2 bg-primary text-white" id="substract-item-count" type="button">-</button>
+              <button class="d-inline p-2 bg-primary text-white rounded-circle" id="substract-item-count" type="button">-</button>
               <p class="d-inline p-2" id="item-count">0</p>
-              <button class="d-inline p-2 bg-primary text-white" id="add-item-count" type="button">+</button>
+              <button class="d-inline p-2 bg-primary text-white rounded-circle" id="add-item-count" type="button">+</button>
             </div>
 
           </div>
-
 
       </div>
       <div class="modal-footer">
@@ -62,7 +70,7 @@
 
   $(document).ready(function(){
 
-    var basket_lenght = localStorage.length;
+    var basket_lenght = localStorage.length - 2;
     if(basket_lenght > 0){
       $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
 
@@ -77,11 +85,29 @@
         alert("0 items can't be added to the basket");
       }
       else{
-        localStorage.setItem(product_info, product_count);
-        basket_lenght = localStorage.length;
+        if (localStorage.getItem(product_info) === null) {
+          localStorage.setItem(product_info, product_count);
+          basket_lenght = localStorage.length - 2;
+          $('#product-modal').modal('toggle');
+          $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
+        }
+        else{
+          var count = localStorage.getItem(product_info);
+          var result = parseInt(count) + parseInt(product_count);
+          localStorage.removeItem(product_info);
+          localStorage.setItem(product_info, result);
+          basket_lenght = localStorage.length - 2;
 
-        $('#product-modal').modal('toggle');
-        $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
+          $('#product-modal').modal('toggle');
+          $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
+        }
+
+
+        // localStorage.setItem(product_info, product_count);
+        // basket_lenght = localStorage.length;
+
+        // $('#product-modal').modal('toggle');
+        // $('#addToCart').text("View Basket (" + basket_lenght + " item/s)");
       }
       
     });
@@ -101,6 +127,8 @@ $(document).ready(function(){
   })
 })
 </script>
+
+
 <script>//Jquery to add or remove 1 from the item counter inside the modal
   $(document).ready(function(){
     $('#add-item-count').click(function(){

@@ -14,15 +14,172 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
+
+    <!-- https://cloud.google.com/speech-to-text/docs/languages -->
+    
     <title>Easy Peasy order</title>
 </head>
 <style>
+html {
+   min-height: 100%;
+
+}
+
+body {
+  background-image: url('https://i.guim.co.uk/img/media/499d2b479537a6bd4c6b21d5332e6a75f8ff2ac9/0_365_5472_3283/master/5472.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=1143109f870268aa9e710dd37bd45ec7');
+   background-size: cover;
+   background-repeat: no-repeat;
+   background-position: center center;
+}
+
+
+  /* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen 
+and (max-width : 320px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* iPads (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 10%;
+      height: 4%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* Desktops and laptops ----------- */
+@media only screen 
+and (min-width : 1224px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 5%;
+      height: 5%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
+
+/* Large screens ----------- */
+@media only screen 
+and (min-width : 1824px) {
+  #fixedContainer
+    {
+      display:block;
+      position:fixed;
+      bottom:70px; 
+      left:20px;
+      right:20px;
+      width: 5%;
+      height: 5%;
+      text-decoration: none;
+      border-radius: 0 !important;
+    }
+}
 
     .search-bar {
-    width: 30%;
     position: relative;
     border-style: groove;
-    border-radius: 10px;
     }
 
     .search-bar input {
@@ -37,15 +194,13 @@
 
     .search-ico {
     position: absolute;
-    left: 10px;
-    top:8px;
+    left: 1px;
     cursor: pointer;
     }
 
     .microphone-ico {
     position: absolute;
-    right: 10px;
-    top: 8px;
+    right: 1px;
     cursor: pointer;
     }
 
@@ -62,48 +217,85 @@
     color: inherit; 
     text-decoration: none;
     }
+
+
 </style>
 <body style="padding-bottom: 80px;">
-    <div class="search-bar text-center box">
-        <input type="text" id="search" name="search" placeholder="Search" value="{{micro|default('', true)}}"/>
-        <a href="{{ url_for('home') }}" id='home' name='home' class="fa fa-home search-ico"></a>
-        <a href="{{ url_for('generate') }}" id='microphone' name='microphone' class="fa fa-microphone microphone-ico"></a>
+
+      <div class="search-bar text-center">
+        <input type="text" id="search" name="search" placeholder="Search"  value="{% if micro == 'ERROR' %}{{''}}{% else %}{{micro|default('', true)}}{% endif %}"/>
+        <button type="button" onclick="window.location.href='{{ url_for('home') }}'" id='home' name='home' style="padding: 6px !important;" class="fa fa-home search-ico"></a>
+        <button type="button" id='microphone' onclick="window.location.href='{{ url_for('loading') }}'" style="padding: 6px !important;" name='microphone' class="fa fa-microphone microphone-ico"></a>
       </div>
       <div id="result" name="result"></div>
-    
-      <a id="addToCart" href="#">View basket</a>
+      <button type="button" id="addToCart">View basket</button>
+
+      <input type="hidden" id="hide-error" value="{{micro}}">
+      <input type="hidden" id="confidence" value="{{confidence}}">
+
+      <input type="image" id="fixedContainer" src="https://m.media-amazon.com/images/I/51jxvUjcdhL._AC_SL1000_.jpg" value="Spain"/>
+      
+<!-- MODAL-VIEW-BASKET -->
+<div class="modal" id="basket-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Basket items:</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body modal-body-basket mx-auto">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="pay-order" class="btn btn-primary">Pay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id='new-order' action="{{ url_for('create_order') }}" method="POST"></form>
+
+<!-- MODAL-START -->
+<div class="modal" id="modal-start" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">IMPORTANT INFORMATION</h5>
+          <button type="button" class="btn-close close-get-started" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>In order to allow the cookies please click on Get started. Otherwise, click on close button.</p>
+          <p>The cookies will allow the app to recognize you each time you visit it. This will improve the performance of the app.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="get-started" class="btn btn-primary">Get started</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-language" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">IMPORTANT INFORMATION</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body language-modal-body">
+          {% for language in results %}
+            <input type="image" src="{{ language[3] }}" alt="" width="100" height="50" value="{{ language[0] }}" class="country-flag">
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="get-started" class="btn btn-primary">Get started</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
 
-<script>
-$(document).ready(function() {
-
-    var search = $('#search').val();
-    load_data(search);
-    function load_data(query)
-    {
-        $.ajax({
-            url:"/ajaxlivesearch",
-            method:"POST",
-            data:{query:query},
-            success:function(data)
-            {
-                $('#result').html(data);
-                $('#result').append(data.htmlresponse);
-            }
-        });
-    }
-    $('#search').keyup(function(){
-        var search = $(this).val();
-        if(search != ''){
-            load_data(search);
-        }
-        else{
-            load_data();
-        }
-
-    });
-
-});
-</script>
+<script src="static/js/indexjs.js"></script>

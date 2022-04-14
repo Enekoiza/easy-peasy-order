@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin dashboard</title>
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+
+<style>
+    #cont {width:700px;margin-right:auto;margin-left:auto;padding:2px; overflow:hidden;}
+
+    label,input,button{
+        margin-top: 5px;
+        margin-right: 3px;
+    }
+
+</style>
+
+
+<body>
+    <div id="cont" class="text-center border border-4">
+    <h1>ADMIN DASHBOARD</h1>
+
+    <h1 style="color: crimson;">{{error}}</h1>
+    <h1 style="color: green;">{{message}}</h1>
+    <div>
+    <form action="{{ url_for('update') }}" method="post">
+        <select name="live-products" id="live-products">
+        {% for product in products %}
+            <option value="{{product[0]}}">{{product[0]}}</option>
+
+        {% endfor %}
+    </select>
+    <button type="submit">Remove product</button>
+    </form>
+    <form action="{{ url_for('update1') }}" method="post">
+        <select name="non-live-products" id="non-live-products">
+        {% for product in no_products %}
+            <option value="{{product[0]}}">{{product[0]}}</option>
+
+        {% endfor %}
+    </select>
+    <button type="submit">Add previous product</button>
+</form>
+<form action="{{ url_for('create_new') }}" method="post">
+    <label for="product-name">Insert product name:</label><br>
+    <input type="text" name="product-name" id="product-name"><br>
+    <label for="product-cost">Insert the cost:</label><br>
+    <input type="text" name="product-cost" id="product-cost"><br>
+    <label for="related-words">Insert related-words:</label><br>
+    <input type="text" name="related-words" id="related-words"><br>
+    <label for="measure">Select the measure:</label><br>
+    <select name="measure" id="measure">
+        <option value="Glass">Glass</option>
+        <option value="Pint">Pint</option>
+        <option value="Half-pint">Half pint</option>
+        <option value="Bottle">Bottle</option>
+        <option value="Cup">Cup</option>
+    </select>
+    <label for="imageURL">Insert the URL of the image:</label><br>
+    <input type="text" name="imageURL" id="imageURL"><br>
+    <button type="submit">Create product</button><br>
+</form>
+<form action="{{ url_for('change_cost') }}" method="post">
+    <select name="product-measure-selection" id="product-measure-selection">
+    {% for product in product_measures %}
+        <option value="{{ product[0] }} {{ product[1] }}">{{ product[0] }} {{ product[1] }}</option>
+
+    {% endfor %}
+    </select>
+    <label for="cost-change">Set the cost value:</label>
+    <input type="text" name="cost-change" id="cost-change">
+    <button type="submit">Change cost</button>
+</form>
+</div>
+<div>
+<form action="{{ url_for('add_language') }}" method="post">
+    <select name="non-live-languages" id="non-live-languages">
+        {% for language in no_languages %}
+            <option value="{{language[0]}}">{{language[0]}}</option>
+
+        {% endfor %}
+    </select>
+    <button type="submit">Add language</button>
+</form>
+<form action="{{ url_for('remove_language') }}" method="post" style="margin-bottom: 10px !important;">
+    <select name="live-languages" id="live-languages">
+        {% for language in languages %}
+            <option value="{{language[0]}}">{{language[0]}}</option>
+
+        {% endfor %}
+    </select>
+    <button type="submit">Remove language</button>
+</form>
+
+    <button onclick="window.location.href='{{ url_for('order_dashboard') }}'">See the orders</button>
+    <button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+
+</div>
+</div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function(){
+        $('#related-words').click(function(){
+            alert("Please take in mind to enter the related words in a comma separated method. For example: soft drink, fizzy");
+
+        });
+
+
+
+
+    })
+</script>
