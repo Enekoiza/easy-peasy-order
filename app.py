@@ -101,7 +101,11 @@ def home():
     results = cursor.fetchall()
     search = request.args.get('search')
     confidence = request.args.get('confidence')
-    return render_template('index.html', micro=search, confidence=confidence, results = results)
+    voicequantity = request.args.get('quantityvoice')
+    if voicequantity:
+        voicequantity = (int(voicequantity))
+        return render_template('index.html', quantityvoice=voicequantity, confidence=confidence, results = results)
+    return render_template('index.html', voiceResponse=search, confidence=confidence, results = results)
 
 @app.route("/admin")
 def admin():
@@ -436,11 +440,13 @@ def generate():
         return redirect(url_for('home', search = result.alternatives[0].transcript, confidence = confidence))
     
 
+#A view to return the data when the input search changes
 @app.route("/ajaxlivesearch", methods=["POST", "GET"])
 def ajaxlivesearch():
     conn = databaseConnection()
     cursor = conn.cursor()
     if request.method == 'POST':
+        #When the search bar input has a value different to ""
         if 'query' in request.form:
             search_word = request.form['query']
             print(search_word)
@@ -448,13 +454,14 @@ def ajaxlivesearch():
             cursor.execute(query)
             product = cursor.fetchall()
             return jsonify({'htmlresponse': render_template('response.html', product=product)})
+        #When the search bar input has a value "" which means get all the items alive
         else:
             query = 'SELECT * FROM PRODUCT WHERE live=1'
             cursor.execute(query)
             product = cursor.fetchall()
             print(product)
             return jsonify({'htmlresponse': render_template('response.html', product=product)})
-    return jsonify('success')
+    return jsonify('ERROR')
 
 @app.route("/neworder", methods=["POST", "GET"])
 def create_order():
@@ -542,6 +549,90 @@ def order_dashboard():
 @app.route("/welcomemessage", methods=["POST", "GET"])
 def welcomemessage():
     return send_from_directory('static/audio', 'welcome.mp3')
+
+@app.route("/selectvoicequantity", methods=["POST", "GET"])
+def quantityvoice():
+
+
+    chunk = 1024  # Record in chunks of 1024 samples
+    sample_format = pyaudio.paInt16  # 16 bits per sample
+    channels = 1
+    fs = 44100  # Record at 44100 samples per second
+    seconds = 4
+    filename = "/Users/enekoiza/Desktop/easy-peasy/test3.wav"
+
+    p = pyaudio.PyAudio()  # Create an interface to PortAudio
+
+    print('Recording')
+
+    stream = p.open(format=sample_format,
+                    channels=channels,
+                    rate=fs,
+                    frames_per_buffer=chunk,
+                    input=True)
+
+    frames = []  # Initialize array to store frames
+
+    # Store data in chunks for 3 seconds
+    for i in range(0, int(fs / chunk * seconds)):
+        data = stream.read(chunk)
+        frames.append(data)
+
+    # Stop and close the stream 
+    stream.stop_stream()
+    stream.close()
+    # Terminate the PortAudio interface
+    p.terminate()
+
+    print('Finished recording')
+
+    # Save the recorded data as a WAV file
+    wf = wave.open(filename, 'w')
+    wf.setnchannels(channels)
+    wf.setsampwidth(p.get_sample_size(sample_format))
+    wf.setframerate(fs)
+    wf.writeframes(b''.join(frames))
+    wf.close()
+    
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/Users/enekoiza/Desktop/easy-peasy/Credentials.json'
+
+
+    # Creates google client
+    client = speech.SpeechClient()
+
+    # Full path of the audio file, Replace with your file name
+    file_name = os.path.join(os.path.dirname(__file__),"test3.wav")
+
+    #Loads the audio file into memory
+    with io.open(file_name, "rb") as audio_file:
+        content = audio_file.read()
+        audio = speech.RecognitionAudio(content=content)
+
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        audio_channel_count=1,
+        language_code="en-GB"
+    )
+
+    # Sends the request to google to transcribe the audio
+    response = client.recognize(request={"config": config, "audio": audio})
+    print(response.results)
+
+
+    if not response.results:
+        return redirect(url_for('home', search = 'ERROR'))
+
+
+    for result in response.results:
+        confidence = result.alternatives[0].confidence
+
+    print(confidence)
+# ("Transcript: {}".format(result.alternatives[0].transcript))
+    # Reads the response
+    print(result.alternatives[0].transcript)
+    for result in response.results:
+        return redirect(url_for('home', quantityvoice = result.alternatives[0].transcript, confidence = confidence, quantityFlag = 'allow' ))
+
 
     
 if __name__ == "__main__":

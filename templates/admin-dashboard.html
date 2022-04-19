@@ -30,21 +30,23 @@
     <h1 style="color: green;">{{message}}</h1>
     <div>
     <form action="{{ url_for('update') }}" method="post">
+        <label for="live-products">Remove a product from the availability list:</label><br>
         <select name="live-products" id="live-products">
         {% for product in products %}
             <option value="{{product[0]}}">{{product[0]}}</option>
 
         {% endfor %}
-    </select>
+    </select><br>
     <button type="submit">Remove product</button>
     </form>
     <form action="{{ url_for('update1') }}" method="post">
+        <label for="non-live-products">Add a product to the availability list:</label><br>
         <select name="non-live-products" id="non-live-products">
         {% for product in no_products %}
             <option value="{{product[0]}}">{{product[0]}}</option>
 
         {% endfor %}
-    </select>
+    </select><br>
     <button type="submit">Add previous product</button>
 </form>
 <form action="{{ url_for('create_new') }}" method="post">
@@ -61,7 +63,7 @@
         <option value="Half-pint">Half pint</option>
         <option value="Bottle">Bottle</option>
         <option value="Cup">Cup</option>
-    </select>
+    </select><br>
     <label for="imageURL">Insert the URL of the image:</label><br>
     <input type="text" name="imageURL" id="imageURL"><br>
     <button type="submit">Create product</button><br>
@@ -80,6 +82,7 @@
 </div>
 <div>
 <form action="{{ url_for('add_language') }}" method="post">
+    <label for="non-live-languages">Add a language to the list of available languages:</label><br>
     <select name="non-live-languages" id="non-live-languages">
         {% for language in no_languages %}
             <option value="{{language[0]}}">{{language[0]}}</option>
@@ -89,6 +92,7 @@
     <button type="submit">Add language</button>
 </form>
 <form action="{{ url_for('remove_language') }}" method="post" style="margin-bottom: 10px !important;">
+    <label for="non-live-languages">Remove a language from the list of available languages:</label><br>
     <select name="live-languages" id="live-languages">
         {% for language in languages %}
             <option value="{{language[0]}}">{{language[0]}}</option>

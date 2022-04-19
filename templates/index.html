@@ -38,7 +38,7 @@ body {
 @media only screen 
 and (min-device-width : 320px) 
 and (max-device-width : 480px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -56,7 +56,7 @@ and (max-device-width : 480px) {
 /* Smartphones (landscape) ----------- */
 @media only screen 
 and (min-width : 321px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -73,7 +73,7 @@ and (min-width : 321px) {
 /* Smartphones (portrait) ----------- */
 @media only screen 
 and (max-width : 320px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -91,7 +91,7 @@ and (max-width : 320px) {
 @media only screen 
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -110,7 +110,7 @@ and (max-device-width : 1024px) {
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) 
 and (orientation : landscape) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -129,7 +129,7 @@ and (orientation : landscape) {
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) 
 and (orientation : portrait) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -146,7 +146,7 @@ and (orientation : portrait) {
 /* Desktops and laptops ----------- */
 @media only screen 
 and (min-width : 1224px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -163,7 +163,7 @@ and (min-width : 1224px) {
 /* Large screens ----------- */
 @media only screen 
 and (min-width : 1824px) {
-  #fixedContainer
+  #language-flag
     {
       display:block;
       position:fixed;
@@ -177,63 +177,76 @@ and (min-width : 1824px) {
     }
 }
 
-    .search-bar {
-    position: relative;
-    border-style: groove;
-    }
+/* The whole search bar */
+.search-bar {
+position: relative;
+border-style: groove;
+}
 
-    .search-bar input {
-    width: calc(100% - 60px);
-    height: 30px;
-    text-align: center;
-    border: none;
-    border-radius: 18px;
-    outline: none;
-    padding: 0 30px;
-    }
+/* The input inside the search bar */
+.search-bar input {
+  width: calc(100% - 60px); /*Give space for the buttons */
+height: 30px;
+text-align: center;
+border: none;
+border-radius: 18px;
+outline: none;
+padding: 0 30px;
+}
 
-    .search-ico {
-    position: absolute;
-    left: 1px;
-    cursor: pointer;
-    }
+/* Home icon */
+.home-ico {
+position: absolute;
+left: 1px;
+cursor: pointer;
+padding: 6px !important;
+}
 
-    .microphone-ico {
-    position: absolute;
-    right: 1px;
-    cursor: pointer;
-    }
+/* Microphone icon */
+.microphone-ico {
+position: absolute;
+right: 1px;
+cursor: pointer;
+padding: 6px !important;
+}
 
-    #addToCart {
-    display:block;
-    position:fixed;
-    text-align:center;
-    background:rgb(52, 41, 201);
-    color:white !important;
-    bottom:20px; 
-    left:20px;
-    right:20px;
-    padding:10px;
-    color: inherit; 
-    text-decoration: none;
-    }
+#addToCart {
+display:block;
+position:fixed;
+text-align:center;
+background:rgb(52, 41, 201);
+color:white !important;
+bottom:20px; 
+left:20px;
+right:20px;
+padding:10px;
+color: inherit; 
+text-decoration: none;
+}
 
 
 </style>
 <body style="padding-bottom: 80px;">
 
       <div class="search-bar text-center">
-        <input type="text" id="search" name="search" placeholder="Search"  value="{% if micro == 'ERROR' %}{{''}}{% else %}{{micro|default('', true)}}{% endif %}"/>
-        <button type="button" onclick="window.location.href='{{ url_for('home') }}'" id='home' name='home' style="padding: 6px !important;" class="fa fa-home search-ico"></a>
-        <button type="button" id='microphone' onclick="window.location.href='{{ url_for('loading') }}'" style="padding: 6px !important;" name='microphone' class="fa fa-microphone microphone-ico"></a>
+        <!-- Return the speech-to-text value from the generate function and put it into the input if thats error leave it empty -->
+        <input type="text" id="search" name="search" placeholder="Search"  value="{% if voiceResponse == 'ERROR' %}{{''}}{% else %}{{voiceResponse|default('', true)}}{% endif %}"/>
+        <!-- Redirects to index subdomain and by calling the home view. Erase the input value -->
+        <button type="button" onclick="window.location.href='{{ url_for('home') }}'" id='home' name='home' class="fa fa-home home-ico">
+        <!-- Prepare for speech-recognition by redirecting to loading screen -->
+        <button type="button" id='microphone' onclick="window.location.href='{{ url_for('loading') }}'" name='microphone' class="fa fa-microphone microphone-ico">
       </div>
+      
+      
       <div id="result" name="result"></div>
       <button type="button" id="addToCart">View basket</button>
 
-      <input type="hidden" id="hide-error" value="{{micro}}">
+      <input type="hidden" id="hide-error" value="{{voiceResponse}}">
       <input type="hidden" id="confidence" value="{{confidence}}">
+      <input type="hidden" id="voicequantity-holder" value="{{quantityvoice}}">
 
-      <input type="image" id="fixedContainer" src="https://m.media-amazon.com/images/I/51jxvUjcdhL._AC_SL1000_.jpg" value="Spain"/>
+
+      <input type="image" id="language-flag" src="https://m.media-amazon.com/images/I/51jxvUjcdhL._AC_SL1000_.jpg" value="Spain"/>
       
 <!-- MODAL-VIEW-BASKET -->
 <div class="modal" id="basket-modal" tabindex="-1">
@@ -254,31 +267,32 @@ and (min-width : 1824px) {
   </div>
   <form id='new-order' action="{{ url_for('create_order') }}" method="POST"></form>
 
-<!-- MODAL-START -->
+<!-- MODAL-COOKIES-START -->
 <div class="modal" id="modal-start" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">IMPORTANT INFORMATION</h5>
-          <button type="button" class="btn-close close-get-started" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>In order to allow the cookies please click on Get started. Otherwise, click on close button.</p>
-          <p>The cookies will allow the app to recognize you each time you visit it. This will improve the performance of the app.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
-          <button type="button" id="get-started" class="btn btn-primary">Get started</button>
-        </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">IMPORTANT INFORMATION</h5>
+        <button type="button" class="btn-close close-get-started" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>In order to allow the cookies please click on Get started. Otherwise, click on close button.</p>
+        <p>The cookies will allow the app to recognize you each time you visit it. This will improve the performance of the app.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="get-started" class="btn btn-primary">Get started</button>
       </div>
     </div>
   </div>
+</div>
 
+  <!-- LANGUAGE MODAL -->
   <div class="modal" id="modal-language" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">IMPORTANT INFORMATION</h5>
+          <h5 class="modal-title">Language selection:</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body language-modal-body">
@@ -288,7 +302,6 @@ and (min-width : 1824px) {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
-          <button type="button" id="get-started" class="btn btn-primary">Get started</button>
         </div>
       </div>
     </div>

@@ -21,7 +21,6 @@ $(document).ready(function(){
     $('#fixedContainer').click(function() {
         $('#modal-language').modal("show");
     });
-
 });
 
 //Save in the local storaget the flag and language that will be used in the speech to text conversion,
@@ -47,9 +46,21 @@ $(document).ready(function () {
 
 //Delete items in the basket and update the basket
 $(document).on('click', '.delete-button', function(){
-    var house = $(this).attr("id");
-    alert(house);
-    localStorage.removeItem(house);
+    var IDholder = $(this).attr("id");
+
+    var costQ = JSON.parse(localStorage.getItem(IDholder));
+
+    var priceGap = parseFloat(costQ[0]).toFixed(2) * parseFloat(costQ[1]);
+
+    var totalPrice = $('#final-price').text();
+
+    totalPrice = totalPrice.replace(/[£,]/g, '');
+
+    totalPrice = parseFloat(totalPrice) - priceGap;
+
+    $('#final-price').text('£' + totalPrice.toFixed(2));
+
+    localStorage.removeItem(IDholder);
     $(this).closest('.delete-parent').remove();
     basket_lenght = localStorage.length - 2;
     if(basket_lenght == 0)
@@ -67,17 +78,25 @@ $(document).on('click', '.delete-button', function(){
 $(document).ready(function(){
     $('#addToCart').click(function(){
         $('.modal-body-basket').empty();
-
+        var finalCost = 0;
         for(var i = 0; i < localStorage.length; i++){
             var key = localStorage.key(i);
-            var value = localStorage.getItem(key);
             if((key == "language") || (key == "language-url"))
             {
               continue;
             }
+            var value = JSON.parse(localStorage.getItem(key));
+            // alert(value);
             $('.modal-body-basket').append('<div class="delete-parent" id=' + key + '><p class="d-block" style="float:left;">' + key + ' => ' + 
-            value + '</p><button class="delete-button" style="float:left; margin-left:10px;" id="' + key + '" type="button">X</button></div>');
+            value[0] + '</p><button class="delete-button" style="float:left; margin-left:10px;" id="' + key + '" type="button">X</button></div>');
+
+            finalCost = parseFloat(finalCost) + (parseFloat(value[0]) * parseFloat(value[1]));
+            finalCost = parseFloat(finalCost).toFixed(2);
         }
+            finalCost = '£' + finalCost.toString();
+            $('.modal-body-basket').append('<label for="final-price">Final cost:</label>')
+            
+            $('.modal-body-basket').append('<h1 id="final-price">' + finalCost + '</h1>')
 
         $('#basket-modal').modal("show");
     });
@@ -123,18 +142,22 @@ $(document).ready(function(){
     var time = now.getTime();
     var expireTime = time + 1000*36000;
     now.setTime(expireTime);
+    // Deny the close by clicking outside the window
     $('#modal-start').modal({
         backdrop: 'static',
         keyboard: false
     })
     var myCookie = getCookie("cookies");
+    // No cookie store
     if (myCookie == null)
     {
         $('#modal-start').modal("show");
     }
+    // Cookie stored
     else{
         return;
     }
+    // Get started is pressed
     $('#get-started').click(function(){
         $('#modal-start').modal('toggle');
         var audioElement = document.createElement('audio');
@@ -142,14 +165,13 @@ $(document).ready(function(){
         audioElement.play();
         document.cookie = 'cookies=allow;expires='+now.toUTCString()+';path=/';
     });
+    //Close is pressed
     $('.close-get-started').click(function(){
         var audioElement = document.createElement('audio');
         audioElement.setAttribute('src', './static/audio/welcome.mp3');
         audioElement.play();
         document.cookie = 'cookies=no-allow;expires='+now.toUTCString()+';path=/';
-
     });
-
 });
 
 //Generate a hidden input with all the basket information and pass it to the server side within a form
@@ -201,7 +223,15 @@ $(document).ready(function(){
     var error = $('#hide-error').val();
     if(error == "ERROR")
     {
-        alert('THERE IS AN ERROR');
+        alert('An error ocurred while detecting your voice, please give privileges to the microphone.');
         window.location.replace('/');
     }
 });
+
+$(document).ready(function(){
+    var confidence = parseFloat($('#confidence').val());
+    if (confidence < 0.7){
+        alert("Sorry, the message matches are very low. Please carefully check that the word you said is the one inserted in the search bar.");
+    }
+})
+
