@@ -9,13 +9,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <style>
-    td{
-        white-space: pre;
-    }
-    #cont {width:700px;margin-right:auto;margin-left:auto;padding:2px; overflow:hidden;}
+td{
+    white-space: pre;
+}
+    #fitScreen {
+        width:100%;
+        padding:2px; 
+        margin-top: 2%;}
+
+@media only screen 
+and (min-device-width : 1200px)  {
+    #fitScreen {
+        width:700px;
+        margin-right:auto;
+        margin-left:auto;
+        padding:2px; 
+        overflow:hidden; 
+        margin-top: 2%;}
+}
 </style>
 <body>
-<div id="cont" class="text-center mt-4">
+<div id="fitScreen" class="text-center mt-4">
     <h1>LIST OF ORDERS:</h1>
     <button onclick="window.location.href='{{ url_for('dashboard') }}'">Return to Admin dashboard</button>
     <button onclick="window.location.href='{{ url_for('order_dashboard') }}'">Reload</button>

@@ -44,7 +44,7 @@ and (min-device-width : 1200px)  {
     <h1 style="color: crimson;">{{error}}</h1>
     <h1 style="color: green;">{{message}}</h1>
     <div>
-    <form action="{{ url_for('update') }}" method="post">
+    <form action="{{ url_for('update_non_live_data') }}" method="post">
         <label for="live-products">Remove a product from the availability list:</label><br>
         <select name="live-products" id="live-products">
         {% for product in products %}
@@ -54,7 +54,7 @@ and (min-device-width : 1200px)  {
     </select><br>
     <button type="submit">Remove product</button>
     </form>
-    <form action="{{ url_for('update1') }}" method="post">
+    <form action="{{ url_for('update_live_product') }}" method="post">
         <label for="non-live-products">Add a product to the availability list:</label><br>
         <select name="non-live-products" id="non-live-products">
         {% for product in no_products %}

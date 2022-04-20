@@ -44,6 +44,7 @@ def getProductName(id):
     conn.close()
     return result[0]
 
+#Function to return the live products
 def getLiveProducts():
     conn = databaseConnection()
     cursor = conn.cursor()
@@ -53,6 +54,7 @@ def getLiveProducts():
     conn.close()
     return result
 
+#Function to return the Non-live products
 def getNonLiveProducts():
     conn = databaseConnection()
     cursor = conn.cursor()
@@ -62,6 +64,7 @@ def getNonLiveProducts():
     conn.close()
     return result
 
+#Function to return the live languages
 def getLiveLanguages():
     conn = databaseConnection()
     cursor = conn.cursor()
@@ -71,6 +74,7 @@ def getLiveLanguages():
     conn.close()
     return result
 
+#Function to return the Non-live languages
 def getNonLiveLanguages():
     conn = databaseConnection()
     cursor = conn.cursor()
@@ -80,6 +84,7 @@ def getNonLiveLanguages():
     conn.close()
     return result
 
+#Function to get all the product with their measures
 def getAllProductsMeasures():
     conn = databaseConnection()
     cursor = conn.cursor()
@@ -114,6 +119,8 @@ def home():
     #return to index with the information passed through Jinja2
     return render_template('index.html', voiceResponse=search, confidence=confidence, results = results)
 
+#Admin login view where the admin view is returned in case that the login session is not saved.
+#Also logouts the session when the view is called by the button logout
 @app.route("/admin")
 def admin():
     if session.get('logout'):
@@ -134,6 +141,8 @@ def logout():
     session['logout'] = 1
     return redirect(url_for('admin'))
 
+
+#Return the admin dashboard if the entered details are correct or there is a session saved
 @app.route("/admin_dashboard", methods=['POST', 'GET'])
 def dashboard():
     error = 'ERROR'
@@ -147,6 +156,7 @@ def dashboard():
     query3 = "SELECT COUNT(*) FROM ADMINLOGIN WHERE username = %s AND password = %s"
     cursor.execute(query3, (username, password,))
     results = cursor.fetchone()
+    #The admin exists
     if results[0] == 1:
         session['login'] = username
         products = getLiveProducts()
@@ -155,6 +165,7 @@ def dashboard():
         no_languages = getNonLiveLanguages()
         product_measures = getAllProductsMeasures()
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures)
+    #There is a session saved
     elif session.get('login'):
         products = getLiveProducts()
         no_products = getNonLiveProducts()
@@ -162,11 +173,14 @@ def dashboard():
         no_languages = getNonLiveLanguages()
         product_measures = getAllProductsMeasures()
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures)
+    #An error happened
     else:
         return render_template('admin.html', error=error)
 
+
+#Change the live option to 0 to make it invisible to the user
 @app.route("/updatinglivedata", methods=['POST', 'GET'])
-def update():
+def update_non_live_data():
     updated_value = request.form.get('live-products')
     print(updated_value)
 
@@ -176,6 +190,7 @@ def update():
     no_languages = getNonLiveLanguages()
     product_measures = getAllProductsMeasures()
 
+    #An error ocurred show it to the user
     if updated_value == None:
         error = 'An error ocurred, if it persists contact the administrator.'
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures, error=error)    
@@ -201,9 +216,9 @@ def update():
 
 
     
-
+#Change the live option to 1 to make the it visibe to the user
 @app.route("/updatingnolivedata", methods=['POST', 'GET'])
-def update1():
+def update_live_product():
     updated_value = request.form.get('non-live-products')
     print(updated_value)
     
@@ -213,12 +228,11 @@ def update1():
     product_measures = getAllProductsMeasures()
     languages = getLiveLanguages()
     no_languages = getNonLiveLanguages()
-
+    
+    #An error ocurred show it to the user
     if updated_value == None:
         error = 'An error ocurred, if it persists contact the administrator.'
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures, error=error)
-
-
 
     try:
         conn = databaseConnection()
@@ -240,7 +254,7 @@ def update1():
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures, error=error)
 
 
-
+#Create a new product that has never been in the database
 @app.route("/createnewproduct", methods=["POST", "GET"])
 def create_new():
     product_name = request.form.get('product-name')
@@ -276,6 +290,7 @@ def create_new():
         error = "Sorry you can't submit a replicated value"
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, error=error, product_measures=product_measures)
 
+#Change the cost of a product that is in the database
 @app.route("/changeproductcost", methods=["POST", "GET"])
 def change_cost():
     new_cost = request.form.get('cost-change')
@@ -310,6 +325,7 @@ def change_cost():
         error = 'An error ocurred, if it persists contact the administrator.'
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures, error=error)
 
+#Make a language available for the user to choose
 @app.route("/addnewlanguage", methods=["POST", "GET"])
 def add_language():
     new_language = request.form.get('non-live-languages')
@@ -340,7 +356,7 @@ def add_language():
 
 
 
-
+#Make a language unavailable for the user to choose
 @app.route("/removelanguage", methods=["POST", "GET"])
 def remove_language():
     removed_language = request.form.get('live-languages')
@@ -368,14 +384,17 @@ def remove_language():
         error = 'An error ocurred, if it persists contact the administrator.'
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures, error=error)
 
+#View to redirect the system to loading.html
 @app.route("/loading")
 def loading():
     return render_template('loading.html')
 
+
+#View that will record the audio from microphone and generate a transcript or an error
 @app.route("/generate", methods=['POST', 'GET'])
 def generate():
+    #Get the language that the user has selected
     language_code = request.form.get('language-holder')
-    print(language_code)
 
     conn = databaseConnection()
     try:
@@ -385,30 +404,35 @@ def generate():
     query2 = "SELECT * FROM LANGUAGE WHERE country= %s"
     cursor.execute(query2, (language_code,))
     language = cursor.fetchone()
-    print(language[1])
+
 
     language_code = language[1]
 
-
-
-
-    chunk = 1024  # Record in chunks of 1024 samples
-    sample_format = pyaudio.paInt16  # 16 bits per sample
+    #Record in chunks of 1024 samples
+    chunk = 1024  
+    #16 bits per sample
+    sample_format = pyaudio.paInt16
+    #Number of audio streams at once
     channels = 1
-    fs = 44100  # Record at 44100 samples per second
-    seconds = 4 # Record for 4 seconds
+    #Record at 44100 samples per second
+    fs = 44100
+    #Record for 4 seconds  
+    seconds = 4
+    #Filename to save the audio input
     filename = "/Users/enekoiza/Desktop/easy-peasy/solution.wav"
 
-    p = pyaudio.PyAudio()  # Create an interface to PortAudio
+    #Create an interface to PortAudio  
+    p = pyaudio.PyAudio()
 
-
+    #Create a stream and populate with the given values
     stream = p.open(format=sample_format,
                     channels=channels,
                     rate=fs,
                     frames_per_buffer=chunk,
                     input=True)
 
-    frames = []  # Initialize array to store frames
+    # Initialize array to store frames
+    frames = [] 
 
     # Store data in chunks for 3 seconds
     for i in range(0, int(fs / chunk * seconds)):
@@ -434,10 +458,10 @@ def generate():
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/Users/enekoiza/Desktop/easy-peasy/Credentials.json'
 
 
-    # Creates google client
+    #Creates google client
     client = speech.SpeechClient()
 
-    # Full path of the audio file, Replace with your file name
+    #Full path of the audio file, Replace with your file name
     file_name = os.path.join(os.path.dirname(__file__),"solution.wav")
 
     #Loads the audio file into memory
@@ -445,22 +469,20 @@ def generate():
         content = audio_file.read()
         audio = speech.RecognitionAudio(content=content)
 
+    #Configuration for the convertion
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
         audio_channel_count=1,
-        language_code=language_code,
-        speech_contexts = [{"phrases" : ["birra moretti", "heineken", "thatchers gold"]}]
-        
+        language_code=language_code
     )
 
-    # Sends the request to google to transcribe the audio
+    #Sends the request to google to transcribe the audio
     response = client.recognize(request={"config": config, "audio": audio})
 
     #There is no response return an error for the user to know
     if not response.results:
         return redirect(url_for('home', search = 'ERROR'))
 
-    print(response.results)
 
     #Extract the confidence from the result
     for result in response.results:
