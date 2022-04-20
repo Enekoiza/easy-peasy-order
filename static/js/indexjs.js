@@ -16,14 +16,15 @@ function getCookie(name) {
     }
     return unescape(cookie.substring(begin + prefix.length, end));
   }
-  
+
+//Open the language modal show when the flag is clicked
 $(document).ready(function(){
-    $('#fixedContainer').click(function() {
+    $('#language-flag').click(function() {
         $('#modal-language').modal("show");
     });
 });
 
-//Save in the local storaget the flag and language that will be used in the speech to text conversion,
+//Save in the local storage the flag and language that will be used in the speech to text conversion,
 // so it keeps permanents while switching between the different views
 $(document).ready(function () {
     if(localStorage.length == 0)
@@ -32,13 +33,13 @@ $(document).ready(function () {
       localStorage.setItem('language', $('#fixedContainer').val());
     }
     selected_flag = localStorage.getItem('language-url');
-    $('#fixedContainer').attr('src', selected_flag);
+    $('#language-flag').attr('src', selected_flag);
     $('.language-modal-body input').click(function() {
       var selected_flag_URL = $(this).attr('src');
       var selected_language = $(this).val();
       localStorage.setItem('language-url', selected_flag_URL);
       localStorage.setItem('language', selected_language);
-      $('#fixedContainer').attr('src', selected_flag_URL);
+      $('#language-flag').attr('src', selected_flag_URL);
       $('#modal-language').modal('toggle');
     });
 });
@@ -193,6 +194,7 @@ $(document).ready(function(){
 
                 var key = localStorage.key(i);
                 var value = localStorage.getItem(key);
+                
                 if((key == "language") || (key == "language-url"))
                 {
                     i = i + 1;
@@ -200,10 +202,12 @@ $(document).ready(function(){
                   continue;
                 }
                 else{
+                    temp = JSON.parse(value);
+                    valueHolder = temp[0]
                     var productholder = "product" + counter.toString();
                     var productvalue = "product-value" + counter.toString();
                     $('#new-order').append('<input type="hidden" id="' + productholder + '" name="' + productholder + '" value="' + key + '">');
-                    $('#new-order').append('<input type="hidden" id="' + productvalue + '" name="' + productvalue + '" value="' + value + '">');
+                    $('#new-order').append('<input type="hidden" id="' + productvalue + '" name="' + productvalue + '" value="' + valueHolder + '">');
                     counter++;
                     localStorage.removeItem(key);
                     i = 0;

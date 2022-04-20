@@ -16,11 +16,15 @@ import io
 
 
 def databaseConnection():
-  conn = mysql.connector.connect(user='root', password='argider_12',
+    try:
+        conn = mysql.connector.connect(user='root', password='argider_12',
                               host='127.0.0.1', port=3306, database='EASYPEASY',
                               auth_plugin='mysql_native_password')
+        return conn
+    except:
+        return render_template('error.html')
 
-  return conn
+  
 
 def getProductID(productName):
     conn = databaseConnection()
@@ -92,19 +96,22 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+#Index view
 @app.route("/")
 def home():
     conn = databaseConnection()
-    cursor = conn.cursor()
+    #Check for database connection error
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
     query1 = "SELECT * FROM LANGUAGE WHERE live=1"
     cursor.execute(query1)
     results = cursor.fetchall()
+    #Get the confidence and word from the speech-to-text conversion
     search = request.args.get('search')
     confidence = request.args.get('confidence')
-    voicequantity = request.args.get('quantityvoice')
-    if voicequantity:
-        voicequantity = (int(voicequantity))
-        return render_template('index.html', quantityvoice=voicequantity, confidence=confidence, results = results)
+    #return to index with the information passed through Jinja2
     return render_template('index.html', voiceResponse=search, confidence=confidence, results = results)
 
 @app.route("/admin")
@@ -133,7 +140,10 @@ def dashboard():
     username = request.form.get('admin-login')
     password = request.form.get('admin-password')
     conn = databaseConnection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
     query3 = "SELECT COUNT(*) FROM ADMINLOGIN WHERE username = %s AND password = %s"
     cursor.execute(query3, (username, password,))
     results = cursor.fetchone()
@@ -172,7 +182,10 @@ def update():
 
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "UPDATE PRODUCT SET live=0 WHERE product_name=%s"
         cursor.execute(query,(updated_value,))
         conn.commit()
@@ -209,7 +222,10 @@ def update1():
 
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "UPDATE PRODUCT SET live=1 WHERE product_name=%s"
         cursor.execute(query,(updated_value,))
         conn.commit()
@@ -243,7 +259,10 @@ def create_new():
 
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "INSERT INTO `PRODUCT` (product_name, related_words, cost, live, measure, imageURL) VALUES (%s, %s , %s, 1, %s, %s);"
         cursor.execute(query,(product_name, related_words, cost, measure, imageURL,))
         conn.commit()
@@ -276,7 +295,11 @@ def change_cost():
 
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "UPDATE PRODUCT SET cost=%s WHERE product_name=%s AND measure = %s"
         cursor.execute(query, (new_cost, product_name, measure,))
         conn.commit()
@@ -299,7 +322,10 @@ def add_language():
 
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "UPDATE LANGUAGE SET live=1 WHERE country=%s"
         cursor.execute(query, (new_language,))
         conn.commit()
@@ -326,7 +352,10 @@ def remove_language():
     product_measures = getAllProductsMeasures()
     try:
         conn = databaseConnection()
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
+        except:
+            return render_template('error.html')
         query = "UPDATE LANGUAGE SET live=0 WHERE country=%s"
         cursor.execute(query, (removed_language,))
         conn.commit()
@@ -349,7 +378,10 @@ def generate():
     print(language_code)
 
     conn = databaseConnection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
     query2 = "SELECT * FROM LANGUAGE WHERE country= %s"
     cursor.execute(query2, (language_code,))
     language = cursor.fetchone()
@@ -364,12 +396,11 @@ def generate():
     sample_format = pyaudio.paInt16  # 16 bits per sample
     channels = 1
     fs = 44100  # Record at 44100 samples per second
-    seconds = 4
-    filename = "/Users/enekoiza/Desktop/easy-peasy/test2.wav"
+    seconds = 4 # Record for 4 seconds
+    filename = "/Users/enekoiza/Desktop/easy-peasy/solution.wav"
 
     p = pyaudio.PyAudio()  # Create an interface to PortAudio
 
-    print('Recording')
 
     stream = p.open(format=sample_format,
                     channels=channels,
@@ -390,7 +421,6 @@ def generate():
     # Terminate the PortAudio interface
     p.terminate()
 
-    print('Finished recording')
 
     # Save the recorded data as a WAV file
     wf = wave.open(filename, 'w')
@@ -400,6 +430,7 @@ def generate():
     wf.writeframes(b''.join(frames))
     wf.close()
     
+    #Import into the operating system the Google Speech-to-text credentials
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/Users/enekoiza/Desktop/easy-peasy/Credentials.json'
 
 
@@ -407,7 +438,7 @@ def generate():
     client = speech.SpeechClient()
 
     # Full path of the audio file, Replace with your file name
-    file_name = os.path.join(os.path.dirname(__file__),"test2.wav")
+    file_name = os.path.join(os.path.dirname(__file__),"solution.wav")
 
     #Loads the audio file into memory
     with io.open(file_name, "rb") as audio_file:
@@ -425,17 +456,18 @@ def generate():
     # Sends the request to google to transcribe the audio
     response = client.recognize(request={"config": config, "audio": audio})
 
+    #There is no response return an error for the user to know
     if not response.results:
         return redirect(url_for('home', search = 'ERROR'))
 
     print(response.results)
 
+    #Extract the confidence from the result
     for result in response.results:
         confidence = result.alternatives[0].confidence
 
-    print(confidence)
-# ("Transcript: {}".format(result.alternatives[0].transcript))
-    # Reads the response
+
+    # Create a home redirection with the final data: transcript and confidence 
     for result in response.results:
         return redirect(url_for('home', search = result.alternatives[0].transcript, confidence = confidence))
     
@@ -444,7 +476,10 @@ def generate():
 @app.route("/ajaxlivesearch", methods=["POST", "GET"])
 def ajaxlivesearch():
     conn = databaseConnection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
     if request.method == 'POST':
         #When the search bar input has a value different to ""
         if 'query' in request.form:
@@ -459,15 +494,18 @@ def ajaxlivesearch():
             query = 'SELECT * FROM PRODUCT WHERE live=1'
             cursor.execute(query)
             product = cursor.fetchall()
-            print(product)
             return jsonify({'htmlresponse': render_template('response.html', product=product)})
     return jsonify('ERROR')
 
+
+#View to generate a new order and insert the items from the paid basket into the database
 @app.route("/neworder", methods=["POST", "GET"])
 def create_order():
+    #Get the count of products
     count = request.form.get('product-count')
     product = []
     productValue = []
+    #Generate the product ids and request the information stored
     for i in range(0,int(count)):
         productName = "product" + str(i)
         productValueName = "product-value" + str(i)
@@ -476,11 +514,15 @@ def create_order():
         productValue.append(productValueHolder)
         product.append(productholder)
     
-    print(product)
 
 
+    #Check for errors in database connection
     conn = databaseConnection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
+    #Check the last order and generate a new one
     checkOrderCount = "SELECT COUNT(*) FROM ORDERS"
     cursor.execute(checkOrderCount)
     noOrder = cursor.fetchone()
@@ -491,14 +533,12 @@ def create_order():
     cursor.execute(nextOrderQuery, (nextOrder,))
     conn.commit()
 
-
+    #Insert the records into the table generated for the many to many relationship
     for i in range(0, int(count)):
         query = "INSERT INTO ORDERS_PRODUCTS (OrderNo, Product_id, quantity) VALUES (%s, %s, %s)"
         cursor.execute(query, (nextOrder, getProductID(product[i]), productValue[i],))
-    
     conn.commit()
-
-
+    #Redirect to the home so the user can order again
     return redirect(url_for('home'))
 
 
@@ -506,7 +546,10 @@ def create_order():
 def order_dashboard():
 
     conn = databaseConnection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except:
+        return render_template('error.html')
     query = "SELECT MAX(OrderNo) FROM ORDERS_PRODUCTS"
     cursor.execute(query)
     maxOrders = cursor.fetchone()
@@ -550,88 +593,6 @@ def order_dashboard():
 def welcomemessage():
     return send_from_directory('static/audio', 'welcome.mp3')
 
-@app.route("/selectvoicequantity", methods=["POST", "GET"])
-def quantityvoice():
-
-
-    chunk = 1024  # Record in chunks of 1024 samples
-    sample_format = pyaudio.paInt16  # 16 bits per sample
-    channels = 1
-    fs = 44100  # Record at 44100 samples per second
-    seconds = 4
-    filename = "/Users/enekoiza/Desktop/easy-peasy/test3.wav"
-
-    p = pyaudio.PyAudio()  # Create an interface to PortAudio
-
-    print('Recording')
-
-    stream = p.open(format=sample_format,
-                    channels=channels,
-                    rate=fs,
-                    frames_per_buffer=chunk,
-                    input=True)
-
-    frames = []  # Initialize array to store frames
-
-    # Store data in chunks for 3 seconds
-    for i in range(0, int(fs / chunk * seconds)):
-        data = stream.read(chunk)
-        frames.append(data)
-
-    # Stop and close the stream 
-    stream.stop_stream()
-    stream.close()
-    # Terminate the PortAudio interface
-    p.terminate()
-
-    print('Finished recording')
-
-    # Save the recorded data as a WAV file
-    wf = wave.open(filename, 'w')
-    wf.setnchannels(channels)
-    wf.setsampwidth(p.get_sample_size(sample_format))
-    wf.setframerate(fs)
-    wf.writeframes(b''.join(frames))
-    wf.close()
-    
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/Users/enekoiza/Desktop/easy-peasy/Credentials.json'
-
-
-    # Creates google client
-    client = speech.SpeechClient()
-
-    # Full path of the audio file, Replace with your file name
-    file_name = os.path.join(os.path.dirname(__file__),"test3.wav")
-
-    #Loads the audio file into memory
-    with io.open(file_name, "rb") as audio_file:
-        content = audio_file.read()
-        audio = speech.RecognitionAudio(content=content)
-
-    config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        audio_channel_count=1,
-        language_code="en-GB"
-    )
-
-    # Sends the request to google to transcribe the audio
-    response = client.recognize(request={"config": config, "audio": audio})
-    print(response.results)
-
-
-    if not response.results:
-        return redirect(url_for('home', search = 'ERROR'))
-
-
-    for result in response.results:
-        confidence = result.alternatives[0].confidence
-
-    print(confidence)
-# ("Transcript: {}".format(result.alternatives[0].transcript))
-    # Reads the response
-    print(result.alternatives[0].transcript)
-    for result in response.results:
-        return redirect(url_for('home', quantityvoice = result.alternatives[0].transcript, confidence = confidence, quantityFlag = 'allow' ))
 
 
     

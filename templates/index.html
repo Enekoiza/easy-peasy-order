@@ -250,22 +250,22 @@ text-decoration: none;
       
 <!-- MODAL-VIEW-BASKET -->
 <div class="modal" id="basket-modal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Basket items:</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body modal-body-basket mx-auto">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" id="pay-order" class="btn btn-primary">Pay</button>
-        </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Basket items:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body modal-body-basket mx-auto">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="pay-order" class="btn btn-primary">Pay</button>
       </div>
     </div>
   </div>
-  <form id='new-order' action="{{ url_for('create_order') }}" method="POST"></form>
+</div>
+<form id='new-order' action="{{ url_for('create_order') }}" method="POST"></form>
 
 <!-- MODAL-COOKIES-START -->
 <div class="modal" id="modal-start" tabindex="-1">
@@ -287,25 +287,25 @@ text-decoration: none;
   </div>
 </div>
 
-  <!-- LANGUAGE MODAL -->
-  <div class="modal" id="modal-language" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Language selection:</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body language-modal-body">
-          {% for language in results %}
-            <input type="image" src="{{ language[3] }}" alt="" width="100" height="50" value="{{ language[0] }}" class="country-flag">
-          {% endfor %}
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
-        </div>
+<!-- LANGUAGE MODAL -->
+<div class="modal" id="modal-language" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Language selection:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body language-modal-body">
+        {% for language in results %}
+          <input type="image" src="{{ language[3] }}" alt="" width="100" height="50" value="{{ language[0] }}" class="country-flag">
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close-get-started" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
 </body>
 
