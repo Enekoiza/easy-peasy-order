@@ -12,7 +12,22 @@
 </head>
 
 <style>
-    #cont {width:700px;margin-right:auto;margin-left:auto;padding:2px; overflow:hidden;}
+#fitScreen {
+        width:100%;
+        padding:2px; 
+        overflow:hidden; 
+        margin-top: 2%;}
+
+@media only screen 
+and (min-device-width : 1200px)  {
+    #fitScreen {
+        width:700px;
+        margin-right:auto;
+        margin-left:auto;
+        padding:2px; 
+        overflow:hidden; 
+        margin-top: 2%;}
+}
 
     label,input,button{
         margin-top: 5px;
@@ -23,7 +38,7 @@
 
 
 <body>
-    <div id="cont" class="text-center border border-4">
+    <div id="fitScreen" class="text-center border border-4">
     <h1>ADMIN DASHBOARD</h1>
 
     <h1 style="color: crimson;">{{error}}</h1>

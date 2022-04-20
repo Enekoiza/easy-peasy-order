@@ -10,10 +10,28 @@
 </head>
 <style>
 
-#cont {width:700px;margin-right:auto;margin-left:auto;padding:2px; overflow:hidden;}
+
+
+
+#fitScreen {
+        width:100%;
+        padding:2px; 
+        overflow:hidden; 
+        margin-top: 5%;}
+
+@media only screen 
+and (min-device-width : 1200px)  {
+    #fitScreen {
+        width:700px;
+        margin-right:auto;
+        margin-left:auto;
+        padding:2px; 
+        overflow:hidden; 
+        margin-top: 5%;}
+}
 </style>
 <body>
-    <div id="cont" class="text-center border">
+    <div id="fitScreen" class="text-center border">
         <h2 style="color:red;">{{error}}</h2>
 
         <form action="{{ url_for('dashboard') }}" class="p-5" method="POST">
