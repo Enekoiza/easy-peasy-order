@@ -29,8 +29,8 @@ $(document).ready(function(){
 $(document).ready(function () {
     if(localStorage.length == 0)
     {
-      localStorage.setItem('language-url', $('#fixedContainer').attr('src'));
-      localStorage.setItem('language', $('#fixedContainer').val());
+      localStorage.setItem('language-url', $('#language-flag').attr('src'));
+      localStorage.setItem('language', $('#language-flag').val());
     }
     selected_flag = localStorage.getItem('language-url');
     $('#language-flag').attr('src', selected_flag);
