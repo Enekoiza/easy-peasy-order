@@ -12,6 +12,7 @@ import wave
 from google.cloud import speech
 import os
 import io
+import hashlib
 
 
 
@@ -148,13 +149,15 @@ def dashboard():
     error = 'ERROR'
     username = request.form.get('admin-login')
     password = request.form.get('admin-password')
+    
+    hashedPassword = hashlib.sha256(password.encode()).hexdigest()
     conn = databaseConnection()
     try:
         cursor = conn.cursor()
     except:
         return render_template('error.html')
     query3 = "SELECT COUNT(*) FROM ADMINLOGIN WHERE username = %s AND password = %s"
-    cursor.execute(query3, (username, password,))
+    cursor.execute(query3, (username, hashedPassword,))
     results = cursor.fetchone()
     #The admin exists
     if results[0] == 1:
@@ -263,6 +266,7 @@ def create_new():
     measure = request.form.get('measure')
     imageURL = request.form.get('imageURL')
 
+    cost = round(cost, 2)
 
     products = getLiveProducts()
     no_products = getNonLiveProducts()
