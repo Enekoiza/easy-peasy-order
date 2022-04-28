@@ -1,11 +1,5 @@
-from crypt import methods
-from functools import lru_cache
-from sqlite3 import Cursor
-from types import MethodDescriptorType
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, session
 from flask_session import Session
-from playsound import playsound
-import gtts
 import mysql.connector
 import pyaudio
 import wave
@@ -146,10 +140,21 @@ def logout():
 #Return the admin dashboard if the entered details are correct or there is a session saved
 @app.route("/admin_dashboard", methods=['POST', 'GET'])
 def dashboard():
-    error = 'ERROR'
+    error = 'Credentials needed'
+
+    #There is a session saved
+    if session.get('login'):
+        products = getLiveProducts()
+        no_products = getNonLiveProducts()
+        languages = getLiveLanguages()
+        no_languages = getNonLiveLanguages()
+        product_measures = getAllProductsMeasures()
+        return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures)
+
     username = request.form.get('admin-login')
     password = request.form.get('admin-password')
-    
+    if username == None and password == None:
+        return render_template('admin.html', error=error)
     hashedPassword = hashlib.sha256(password.encode()).hexdigest()
     conn = databaseConnection()
     try:
@@ -168,14 +173,8 @@ def dashboard():
         no_languages = getNonLiveLanguages()
         product_measures = getAllProductsMeasures()
         return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures)
-    #There is a session saved
-    elif session.get('login'):
-        products = getLiveProducts()
-        no_products = getNonLiveProducts()
-        languages = getLiveLanguages()
-        no_languages = getNonLiveLanguages()
-        product_measures = getAllProductsMeasures()
-        return render_template('admin-dashboard.html', products = products, no_products=no_products, languages = languages, no_languages=no_languages, product_measures=product_measures)
+    
+
     #An error happened
     else:
         return render_template('admin.html', error=error)
@@ -570,6 +569,11 @@ def create_order():
 
 @app.route("/order_dashboard", methods=["POST", "GET"])
 def order_dashboard():
+
+    error = "Credentials needed"
+
+    if not session.get('login'):
+        return render_template('admin.html', error=error)
 
     conn = databaseConnection()
     try:
