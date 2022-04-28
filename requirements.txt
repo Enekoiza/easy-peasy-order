@@ -1,6 +1,5 @@
 cachelib==0.6.0
 cachetools==5.0.0
-certifi==2021.10.8
 charset-normalizer==2.0.12
 Flask==2.0.3
 Flask-Session==0.4.0
@@ -13,7 +12,6 @@ grpcio==1.44.0
 grpcio-status==1.44.0
 idna==3.3
 Jinja2==3.0.3
-MarkupSafe==2.1.0
 mysql-connector==2.2.9
 mysql-connector-python==8.0.28
 proto-plus==1.20.3
