@@ -24,7 +24,7 @@ This projects uses the last version of Python which is v3.10 and can be found in
 
 To make the voice recognition work you will need to add your own credentials by creating an account in google cloud.
 
-For marking, the markers will have access to the file that must be placed in the main directory of the application.
+For marking, the markers will have access to the JSON file that must be placed in the main directory of the application.
 
 
 
