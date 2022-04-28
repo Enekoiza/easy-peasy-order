@@ -7,13 +7,13 @@ from google.cloud import speech
 import os
 import io
 import hashlib
-
+import config
 
 
 def databaseConnection():
     try:
-        conn = mysql.connector.connect(user='root', password='argider_12',
-                              host='127.0.0.1', port=3306, database='EASYPEASY',
+        conn = mysql.connector.connect(user=config.username, password=config.password,
+                              host=config.hostname, port=config.port, database='EASYPEASY',
                               auth_plugin='mysql_native_password')
         return conn
     except:
